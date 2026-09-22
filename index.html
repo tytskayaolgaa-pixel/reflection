@@ -6,6 +6,14 @@
 <title>reflection [2025]</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='white' stroke='black' stroke-width='2'/%3E%3C/svg%3E">
 <style>
+  :root {
+    /* fluid type scale: 24px on desktop, shrinks smoothly down to ~15px on phones */
+    --fs: clamp(15px, 1.1vw + 11px, 24px);
+    --fs-sm: clamp(12px, 0.5vw + 10px, 16px);
+    --side-w: min(460px, 42vw);
+    --gutter: clamp(16px, 4vw, 38px);
+  }
+
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   html, body {
@@ -16,35 +24,34 @@
   }
 
   body {
-    min-width: 1000px;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    padding-top: 81px;
+    /* padding-top is kept in sync with the fixed header's real height via JS */
   }
 
   /* ---------- HEADER ---------- */
   header.top-bar {
     width: 100%;
-    height: 81px;
     background: linear-gradient(0deg, white 2%, #979797 100%);
     position: fixed;
     top: 0;
     left: 0;
     z-index: 30;
+    padding: 14px calc(var(--gutter) + 56px) 10px var(--gutter);
   }
 
   .top-icons {
     position: absolute;
-    right: 32px;
+    right: clamp(14px, 3vw, 32px);
     top: 10px;
     display: flex;
     gap: 10px;
   }
 
   .top-icons .dot {
-    width: 23px;
-    height: 23px;
+    width: clamp(14px, 2.2vw, 23px);
+    height: clamp(14px, 2.2vw, 23px);
     border-radius: 50%;
     border: 1px solid black;
     background: transparent;
@@ -52,19 +59,19 @@
   }
 
   .title-block {
-    position: absolute;
-    left: 38px;
-    top: 25px;
     display: flex;
     align-items: baseline;
     justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px 16px;
   }
 
   .title-block .title {
-    font-size: 24px;
+    font-size: var(--fs);
     color: black;
     text-decoration: none;
     cursor: pointer;
+    white-space: nowrap;
   }
 
   .nav-link:hover,
@@ -73,14 +80,15 @@
   }
 
   .title-block .year {
-    font-size: 24px;
+    font-size: var(--fs);
+    white-space: nowrap;
   }
 
   .subtitle {
-    position: absolute;
-    left: 38px;
-    top: 53px;
-    font-size: 24px;
+    display: inline-block;
+    max-width: 100%;
+    margin-top: 4px;
+    font-size: var(--fs);
     font-style: italic;
   }
 
@@ -93,24 +101,24 @@
   }
 
   nav.side-menu {
-    width: 460px;
+    width: var(--side-w);
     flex-shrink: 0;
-    padding-left: 38px;
+    padding-left: var(--gutter);
     display: flex;
     flex-direction: column;
     position: fixed;
-    top: 94px;
     left: 0;
     z-index: 20;
+    /* top is kept in sync with the header's real height via JS */
   }
 
   nav.side-menu a {
     display: block;
-    font-size: 24px;
+    font-size: var(--fs);
     color: black;
     text-decoration: none;
     padding: 0;
-    line-height: 41px;
+    line-height: 1.7;
     cursor: pointer;
     width: fit-content;
   }
@@ -126,14 +134,40 @@
 
   .content-area {
     flex: 1;
-    margin-left: 460px;
-    padding: 8px 60px 60px 0;
+    margin-left: var(--side-w);
+    padding: 8px var(--gutter) 60px var(--gutter);
     min-height: 500px;
+    min-width: 0;
+  }
+
+  /* Below this width the fixed side menu would leave too little room for
+     content, so it drops into normal flow above the content instead. */
+  @media (max-width: 720px) {
+    :root { --side-w: 100%; }
+
+    .main-wrap {
+      flex-direction: column;
+    }
+
+    nav.side-menu {
+      position: static !important;
+      width: 100%;
+      flex-direction: row;
+      flex-wrap: wrap;
+      column-gap: 28px;
+      row-gap: 4px;
+      padding: 0 var(--gutter) 16px var(--gutter);
+    }
+
+    .content-area {
+      margin-left: 0;
+      padding: 8px var(--gutter) 48px var(--gutter);
+    }
   }
 
   /* ---------- ABOUT ---------- */
   .about-text {
-    font-size: 24px;
+    font-size: var(--fs);
     line-height: 1.35;
     max-width: 700px;
   }
@@ -141,12 +175,12 @@
   /* ---------- CONTACT ---------- */
   .contact-links {
     display: flex;
-    gap: 60px;
+    gap: clamp(20px, 5vw, 60px);
     flex-wrap: wrap;
   }
 
   .contact-links a {
-    font-size: 24px;
+    font-size: var(--fs);
     color: black;
     text-decoration: none;
   }
@@ -171,6 +205,19 @@
     transition: opacity 0.15s ease;
   }
 
+  @media (max-width: 1100px) {
+    .archive-grid { column-count: 3; }
+  }
+
+  @media (max-width: 720px) {
+    .archive-grid { column-count: 2; column-gap: 12px; }
+    .archive-grid img { margin-bottom: 12px; }
+  }
+
+  @media (max-width: 420px) {
+    .archive-grid { column-count: 1; }
+  }
+
   .archive-grid img:hover {
     opacity: 0.8;
   }
@@ -184,12 +231,12 @@
 
   .random-view img {
     max-width: 100%;
-    max-height: 780px;
+    max-height: 75vh;
     cursor: pointer;
   }
 
   .random-hint {
-    font-size: 16px;
+    font-size: var(--fs-sm);
     color: #d3d3d3;
     margin-top: 14px;
     text-align: center;
@@ -219,10 +266,10 @@
 
   .lightbox-close {
     position: absolute;
-    top: 24px;
-    right: 34px;
+    top: clamp(12px, 3vw, 24px);
+    right: clamp(16px, 4vw, 34px);
     color: white;
-    font-size: 28px;
+    font-size: clamp(22px, 5vw, 28px);
     font-family: Arial, sans-serif;
     cursor: pointer;
     line-height: 1;
@@ -232,20 +279,25 @@
   /* ---------- FOOTER ---------- */
   footer.bottom-bar {
     flex-shrink: 0;
-    padding: 0 20px 24px 20px;
+    padding: 0 var(--gutter) 24px var(--gutter);
   }
 
   .footer-inner {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: 10px;
     width: 100%;
   }
 
   .footer-inner .footer-name,
   .footer-inner .footer-domain {
-    font-size: 24px;
+    font-size: var(--fs);
     white-space: nowrap;
+  }
+
+  .footer-inner .footer-line {
+    min-width: 40px;
   }
 
   .footer-inner .footer-domain {
@@ -323,16 +375,33 @@
     navLinks.forEach(l => l.classList.toggle('active', l.dataset.view === view));
   }
 
+  const headerEl = document.querySelector('.top-bar');
+  const navEl = document.querySelector('.side-menu');
+
   // Align [2025] so its right edge matches the right edge of the italic subtitle
   function alignHeader() {
     const subtitle = document.querySelector('.subtitle');
     const titleBlock = document.querySelector('.title-block');
     if (subtitle && titleBlock) {
-      titleBlock.style.width = subtitle.offsetWidth + 'px';
+      titleBlock.style.width = Math.min(subtitle.offsetWidth, subtitle.parentElement.clientWidth) + 'px';
     }
   }
-  alignHeader();
-  window.addEventListener('resize', alignHeader);
+
+  // The header's height changes with viewport width (text can wrap on
+  // narrow screens), so keep the page offset and the fixed side menu's
+  // top position synced to its real, current height.
+  function syncLayout() {
+    alignHeader();
+    const h = headerEl.offsetHeight;
+    document.body.style.paddingTop = h + 'px';
+    navEl.style.top = (h + 13) + 'px';
+  }
+
+  syncLayout();
+  window.addEventListener('resize', syncLayout);
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(syncLayout);
+  }
 
   function openLightbox(src) {
     lightboxImg.src = src;
